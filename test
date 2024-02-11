@@ -136,7 +136,7 @@ local blockT = 0
 
 local Dig = function ()
     if GetChest() then
-        VG.Tween(Player.Character.HumanoidRootPart, GetChest():FindFirstChildWhichIsA("BasePart"), 50, Vector3.new(0,0,2), true)
+        VG.Tween(Player.Character.HumanoidRootPart, GetChest():FindFirstChildWhichIsA("BasePart"), 500, Vector3.new(0,0,2), true)
         ReplicatedStorage:WaitForChild("Network"):WaitForChild("Instancing_FireCustomFromClient"):FireServer(CurrentActive().Name, "DigChest", GetChest():GetAttribute('Coord'))
         wait(2)
     else
@@ -153,9 +153,9 @@ local Dig = function ()
             blockT = os.time() + 10
         end
 
-        VG.Tween(Player.Character.HumanoidRootPart, block, 50, Vector3.new(0,0,1), true)
+        VG.Tween(Player.Character.HumanoidRootPart, block, 500, Vector3.new(0,0,1), true)
         ReplicatedStorage:WaitForChild("Network"):WaitForChild("Instancing_FireCustomFromClient"):FireServer(CurrentActive().Name, "DigBlock", block:GetAttribute('Coord'))
-        wait(.3)
+        wait(.1)
     end
 end
 local DigAura = function()
