@@ -90,7 +90,7 @@ local GetBlock = function()
     local yb = nil
 
     for i,v in next, IHateMakingNamesFortables.Important.ActiveBlocks:GetChildren() do
-        if v:IsA("BasePart") and not dontGet[v] then
+        if v:IsA("BasePart") and not dontGet[v] and v.Color ~= Color3.new(0, 0, 0) and v.Transparency == 0 then
             local Mag = VG.Mag(Player.Character.HumanoidRootPart, v)
             if Mag <=  Distance then
                 Distance = Mag
@@ -109,7 +109,7 @@ local GetHighestBlock = function()
     local yb = nil
 
     for i,v in next, IHateMakingNamesFortables.Important.ActiveBlocks:GetChildren() do
-        if v:IsA("BasePart") and not dontGet[v] then
+        if v:IsA("BasePart") and not dontGet[v] and v.Color ~= Color3.new(0, 0, 0) and v.Transparency == 0 then
             if v.Position.Y > ym then
                 ym = v.Position.Y
                 yb = v
@@ -170,7 +170,8 @@ local Dig = function ()
     if GetChest() then
         VG.Tween(Player.Character.HumanoidRootPart, GetChest():FindFirstChildWhichIsA("BasePart"), 500, Vector3.new(0,0,2), true)
         ReplicatedStorage:WaitForChild("Network"):WaitForChild("Instancing_FireCustomFromClient"):FireServer(CurrentActive().Name, "DigChest", GetChest():GetAttribute('Coord'))
-        wait(2)
+        task.wait(1)
+        digStart = os.clock()
     else
         local block = GetBlock()
         
@@ -193,7 +194,7 @@ local Dig = function ()
             if math.abs(newDigTime - digTime) > 1 then
                 block = GetHighestBlock()
             end
-            
+
             digTime = newDigTime
         end
 
