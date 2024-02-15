@@ -90,7 +90,7 @@ local GetBlock = function()
     local yb = nil
 
     for i,v in next, IHateMakingNamesFortables.Important.ActiveBlocks:GetChildren() do
-        if v:IsA("BasePart") and not dontGet[v] and v.Color ~= Color3.new(0, 0, 0) and v.Transparency == 0 then
+        if v:IsA("BasePart") and not dontGet[v] and not(v.Color.R < 0.2 and v.Color.G  < 0.2 and v.Color.B < 0.2) and v.Transparency == 0 then
             local Mag = VG.Mag(Player.Character.HumanoidRootPart, v)
             if Mag <=  Distance then
                 Distance = Mag
@@ -109,7 +109,7 @@ local GetHighestBlock = function()
     local yb = nil
 
     for i,v in next, IHateMakingNamesFortables.Important.ActiveBlocks:GetChildren() do
-        if v:IsA("BasePart") and not dontGet[v] and v.Color ~= Color3.new(0, 0, 0) and v.Transparency == 0 then
+        if v:IsA("BasePart") and not dontGet[v] and not(v.Color.R < 0.2 and v.Color.G < 0.2 and v.Color.B < 0.2)  and v.Transparency == 0 then
             if v.Position.Y > ym then
                 ym = v.Position.Y
                 yb = v
@@ -168,10 +168,13 @@ local digTime = 0
 
 local Dig = function ()
     if GetChest() then
-        VG.Tween(Player.Character.HumanoidRootPart, GetChest():FindFirstChildWhichIsA("BasePart"), 1000, Vector3.new(0,0,2), true)
+        local chestPart = GetChest():FindFirstChildWhichIsA("BasePart")
+        VG.Tween(Player.Character.HumanoidRootPart, chestPart, 1000, Vector3.new(0,0,2), true)
         ReplicatedStorage:WaitForChild("Network"):WaitForChild("Instancing_FireCustomFromClient"):FireServer(CurrentActive().Name, "DigChest", GetChest():GetAttribute('Coord'))
-        task.wait(1)
-        digStart = os.clock() + 2
+        
+        local us = os.clock + 5
+        repeat task.wait() until not chestPart.Parent or os.clock() < us
+        digStart = os.clock()
     else
         local block = GetBlock()
         
