@@ -96,6 +96,20 @@ local GetBlock = function()
                 Distance = Mag
                 Block = v
             end
+        end
+    end
+    return Block -- I Hate this part
+end
+
+local GetHighestBlock = function()
+    local IHateMakingNamesFortables = CurrentActive()
+    local Distance = math.huge
+    local Block = nil
+    local ym = -10000000000
+    local yb = nil
+
+    for i,v in next, IHateMakingNamesFortables.Important.ActiveBlocks:GetChildren() do
+        if v:IsA("BasePart") and not dontGet[v] then
             if v.Position.Y > ym then
                 ym = v.Position.Y
                 yb = v
@@ -149,6 +163,9 @@ end
 local oldBlock = nil
 local blockT = 0
 
+local digStart = 0
+local digTime = 0
+
 local Dig = function ()
     if GetChest() then
         VG.Tween(Player.Character.HumanoidRootPart, GetChest():FindFirstChildWhichIsA("BasePart"), 500, Vector3.new(0,0,2), true)
@@ -162,11 +179,22 @@ local Dig = function ()
                 dontGet[oldBlock] = true
                 Player.Character.HumanoidRootPart.CFrame = CFrame.new(563, 61, -2547)
                 oldBlock = nil
+                digTime = 0
                 return
+            else
+                
             end
         else
             oldBlock = block
             blockT = os.time() + 10
+            local newDigTime = (os.clock() - digStart)
+            digStart = os.clock()
+
+            if math.abs(newDigTime - digTime) > 1 then
+                block = GetHighestBlock()
+            end
+            
+            digTime = newDigTime
         end
 
         Player.Character.HumanoidRootPart.CFrame = block.CFrame + Vector3.new(0, 1, 0)
@@ -337,6 +365,8 @@ do
             end
         end)
         spawn(function()
+            digStart = os.clock()
+            digTime = 0
             while Toggle and wait() do
                 pcall(function()
                     Dig()
