@@ -207,7 +207,7 @@ local Dig = function ()
                 block = GetHighestBlock()                
             end
 
-            if newDigTime < 1 then
+            if newDigTime < 2 then
                 goodheight = block.Position.Y
             end
             
