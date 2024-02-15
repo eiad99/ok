@@ -78,6 +78,7 @@ function Activated()
     Wait()
 end
 
+local goodheight = -10000000000
 local CurrentActive = function()
     return Active:GetChildren()[1] -- idk how else to get a unnamed object feel free to teach me
 end
@@ -108,15 +109,21 @@ local GetHighestBlock = function()
     local ym = -10000000000
     local yb = nil
 
+    local ys = 0
+    local ysb = nil
     for i,v in next, IHateMakingNamesFortables.Important.ActiveBlocks:GetChildren() do
         if v:IsA("BasePart") and not dontGet[v] and not(v.Color.R < 0.2 and v.Color.G < 0.2 and v.Color.B < 0.2)  and v.Transparency == 0 then
+            if v.Position.Y > goodheight and v.Position.Y < ys then
+                ys = v.Position.Y
+                ysb = v
+            end
             if v.Position.Y > ym then
                 ym = v.Position.Y
                 yb = v
             end
         end
     end
-    return yb -- I Hate this part
+    return ys or yb -- I Hate this part
 end
 
 task.spawn(function()
@@ -197,8 +204,13 @@ local Dig = function ()
             digStart = os.clock()
 
             if not dontSkip and newDigTime - digTime > 1 then
-                block = GetHighestBlock()
+                block = GetHighestBlock()                
             end
+
+            if newDigTime < 1 then
+                goodheight = block.Position.Y
+            end
+            
             dontSkip = false
 
             digTime = newDigTime
