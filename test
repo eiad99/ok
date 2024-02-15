@@ -15,6 +15,8 @@ local Active = Things.__INSTANCE_CONTAINER:WaitForChild("Active")
 local I = Network:WaitForChild("Instancing_FireCustomFromClient")
 local I2 = Network:WaitForChild("Instancing_InvokeCustomFromClient")
 
+local dontGet = {}
+
 function GetRod()
     return Player.Character:FindFirstChild("Rod", true)
 end
@@ -84,18 +86,31 @@ local GetBlock = function()
     local IHateMakingNamesFortables = CurrentActive()
     local Distance = math.huge
     local Block = nil
+    local ym = -10000000000
+    local yb = nil
+
     for i,v in next, IHateMakingNamesFortables.Important.ActiveBlocks:GetChildren() do
-        if v:IsA("BasePart") then
+        if v:IsA("BasePart") and not dontGet[v] then
             local Mag = VG.Mag(Player.Character.HumanoidRootPart, v)
             if Mag <=  Distance then
                 Distance = Mag
                 Block = v
             end
+            if v.Position.Y > ym then
+                ym = v.Position.Y
+                yb = v
+            end
         end
     end
-    return Block -- I Hate this part
+    return yb -- I Hate this part
 end
- 
+
+task.spawn(function()
+    while task.wait(60*60) do
+        dontGet = {}
+    end
+end)
+
 local GetChest = function()
     local Table = CurrentActive()
     local Distance = math.huge -- KYS
@@ -144,6 +159,7 @@ local Dig = function ()
         
         if block == oldBlock then
             if os.time() > blockT then
+                dontGet[oldBlock] = true
                 Player.Character.HumanoidRootPart.CFrame = CFrame.new(563, 61, -2547)
                 oldBlock = nil
                 return
@@ -153,7 +169,8 @@ local Dig = function ()
             blockT = os.time() + 10
         end
 
-        VG.Tween(Player.Character.HumanoidRootPart, block, 500, Vector3.new(0,0,1), true)
+        Player.Character.HumanoidRootPart.CFrame = block.CFrame + Vector3.new(0, 1, 0)
+    --    VG.Tween(Player.Character.HumanoidRootPart, block, 500, Vector3.new(0,0,1), true)
         ReplicatedStorage:WaitForChild("Network"):WaitForChild("Instancing_FireCustomFromClient"):FireServer(CurrentActive().Name, "DigBlock", block:GetAttribute('Coord'))
         wait(.1)
     end
