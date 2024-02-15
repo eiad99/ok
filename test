@@ -165,6 +165,7 @@ local blockT = 0
 
 local digStart = 0
 local digTime = 0
+local dontSkip = false
 
 local Dig = function ()
     if GetChest() then
@@ -175,6 +176,7 @@ local Dig = function ()
         local us = os.clock + 5
         repeat task.wait() until not chestPart.Parent or os.clock() < us
         digStart = os.clock()
+        dontSkip = true
     else
         local block = GetBlock()
         
@@ -194,10 +196,11 @@ local Dig = function ()
             local newDigTime = (os.clock() - digStart)
             digStart = os.clock()
 
-            if math.abs(newDigTime - digTime) > 1 then
+            if not dontSkip and math.abs(newDigTime - digTime) > 1 then
                 block = GetHighestBlock()
             end
-
+            dontSkip = false
+            
             digTime = newDigTime
         end
 
